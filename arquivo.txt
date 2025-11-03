@@ -2,10 +2,7 @@ _d
 3.4
 3.1
 aa0f"hoje"
+//Rafael
 jdfssiu 88 ashdj 12
 !!!+-=-+=!
-
-teui90.01!+
-3.1ab!=
-_uiu
-returnw
+int x 10/2

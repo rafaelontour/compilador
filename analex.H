@@ -29,6 +29,8 @@ enum SINAIS {
     FECHA_COL
 };
 
+TOKEN Analex(FILE *fd);
+
 const char *palavrasReservadas[] = {
     "main",
     "if",

@@ -3,7 +3,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdbool.h>
-#include "Analex.h"
+#include "analex.h"
 
 #define TAM_LEXEMA 50
 #define TAM_NUM 20
@@ -258,6 +258,7 @@ TOKEN Analex(FILE *fd) {
                     lexema[tamD] = c;
                     lexema[++tamD] = '\0';
                     break;
+
                 } else {  // TRANSIÇÃO PARA OUTRO, RECONHECEU UM NÚMERO INTEIRO
                     estado = 16;
                     lexema[tamD] = '\0';
@@ -266,6 +267,7 @@ TOKEN Analex(FILE *fd) {
                     ungetc(c, fd);
                     return token;
                 }
+
                 break;
 
             case 10:
@@ -295,6 +297,7 @@ TOKEN Analex(FILE *fd) {
                 }
 
                 break;
+
             case 12:  // ESTADO DE LEITURA DE IDENTIFICADOR
                 if (c == '_' || isalpha(c) || isdigit(c)) {
                     estado = 13;
@@ -315,6 +318,7 @@ TOKEN Analex(FILE *fd) {
                     estado = 13;
                     lexema[tamL] = c;
                     lexema[++tamL] = '\0';
+                    
                 } else {  // TRANSIÇÃO PARA OUTRO, RECONHECEU IDENTIFICADOR
                     if (c != '\n') ungetc(c, fd);
                     estado = 0;
@@ -500,11 +504,6 @@ TOKEN Analex(FILE *fd) {
                     
                     token.categoria = COMENTARIO;
                     strcpy(token.lexema, lexema);
-                    return token;
-                }
-
-                if (c == EOF) {
-                    token.categoria = FIM_ARQ;
                     return token;
                 }
 

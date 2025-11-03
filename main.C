@@ -1,5 +1,6 @@
-#include "Analex.c"
+#include "analex.h"
 #include <locale.h>
+#include <cstdio>
 
 int main() {
     setlocale(LC_ALL, "pt_BR.UTF-8");
@@ -10,7 +11,6 @@ int main() {
     if ((fd = fopen("arquivo.txt", "r")) == NULL) {
         printf("Erro ao abrir o arquivo");
     }
-
 
     while (true) {
         token = Analex(fd);
