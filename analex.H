@@ -1,8 +1,9 @@
 #ifndef ANALEX
 #define ANALEX
+#include <stdio.h>
 #define TAM_MAX_LEXEMA 31
 
-enum TOKEN_CAT {ID = 1, SINAL, CT_I, CT_PF, CHAR, FIM_EXPR, FIM_ARQ, STRING, COMENTARIO};
+enum TOKEN_CAT {ID = 1, SINAL, PR, CT_I, CT_PF, CHAR, FIM_EXPR, FIM_ARQ, STRING, FIM_DE_LINHA};
 // CT_I = Constante Inteira, CHAR = Caractere, STRING = Sequência de caracteres
 // CT_PF = Constante Ponto Flutuante
 
@@ -29,47 +30,8 @@ enum SINAIS {
     FECHA_COL
 };
 
-TOKEN Analex(FILE *fd);
-
-const char *palavrasReservadas[] = {
-    "main",
-    "if",
-    "elseif",
-    "endif",
-    "else",
-    "for",
-    "while",
-    "endwhile",
-    "const",
-    "idconst",
-    "do",
-    "switch",
-    "case",
-    "default",
-    "break",
-    "continue",
-    "printf",
-    "scanf",
-    "int",
-    "float",
-    "char",
-    "void",
-    "goback",
-    "true",
-    "false",
-    "return",
-    "putint",
-    "putreal",
-    "putchar",
-    "getint",
-    "getreal",
-    "getchar",
-    "bool",
-    "with",
-    "id",
-    "endblock"
-
-};
+extern const char *palavrasReservadas[];
+extern int contadorLinha;
 
 typedef struct {
     enum TOKEN_CAT categoria;
@@ -81,6 +43,6 @@ typedef struct {
     };
 } TOKEN;
 
-#endif
+TOKEN Analex(FILE *fd);
 
-int contadorLinha = 0;
+#endif

@@ -1,9 +1,11 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "analex.h"
 #include <locale.h>
-#include <cstdio>
 
 int main() {
     setlocale(LC_ALL, "pt_BR.UTF-8");
+    int contadorLinha = 0;
 
     FILE *fd;
     TOKEN token;
@@ -12,148 +14,151 @@ int main() {
         printf("Erro ao abrir o arquivo");
     }
 
-    while (true) {
+    printf("LINHA 1: ");
+
+    while (1) {
         token = Analex(fd);
 
         switch(token.categoria) {
             case ID:
-                printf("ID: %s\n", token.lexema);
+                printf("<ID,  %s> | %s", token.lexema);
                 break;
             case SINAL:
                 if (token.codigo == ATRIB) {
-                    printf("ATRIB: =\n");
+                    printf("<SINAL, => | ");
                     break;
                 }
 
                 if (token.codigo == ADICAO) {
-                    printf("OPERADOR: +\n");
+                    printf("<SINAL, +> | ");
                     break;
                 }
                 
                 if (token.codigo == SUB) {
-                    printf("OPERADOR: -\n");
+                    printf("<SINAL: -> | ");
                     break;
                 }
 
                 if (token.codigo == MULT) {
-                    printf("OPERADOR: *\n");
+                    printf("<SINAL: *> | ");
                     break;
                 }
 
                 if (token.codigo == DIV) {
-                    printf("OPERADOR: /\n");
+                    printf("<SINAL: /> | ");
                     break;
                 }
 
                 if (token.codigo == IGUAL) {
-                    printf("OPERADOR: ==\n");
+                    printf("<SINAL: ==> | ");
                     break;
                 }
 
                 if (token.codigo == DIFERENTE) {
-                    printf("OPERADOR: !=\n");
+                    printf("<SINAL: !=> | ");
                     break;
                 }
 
                 if (token.codigo == E) {
-                    printf("OPERADOR: &&\n");
+                    printf("<SINAL: &&> | ");
                     break;
                 }
 
                 if (token.codigo == OU) {
-                    printf("OPERADOR: ||\n");
+                    printf("<SINAL: ||> | ");
                     break;
                 }
 
                 if (token.codigo == NEGACAO) {
-                    printf("OPERADOR: !\n");
+                    printf("<SINAL: !> | ");
                     break;
                 }
 
                 if (token.codigo == MAIOR) {
-                    printf("OPERADOR: >\n");
+                    printf("<SINAL: >> | ");
                     break;
                 }
 
                 if (token.codigo == MENOR) {
-                    printf("OPERADOR: <\n");
+                    printf("<SINAL: <> | ");
                     break;
                 }
 
                 if (token.codigo == MAIOR_IGUAL) {
-                    printf("OPERADOR: >=\n");
+                    printf("<SINAL: >=> | ");
                     break;
                 }
 
                 if (token.codigo == MENOR_IGUAL) {
-                    printf("OPERADOR: <=\n");
+                    printf("<SINAL: <=> | ");
                     break;
                 }
 
                 if (token.codigo == ABRE_PAR) {
-                    printf("ABRE_PAR\n");
+                    printf("<SINAL: (> | ");
                     break;
                 }
 
                 if (token.codigo == FECHA_PAR) {
-                    printf("FECHA_PAR\n");
+                    printf("<SINAL: )> | ");
                     break;
                 }
 
                 if (token.codigo == ABRE_CHAVE) {
-                    printf("ABRE_CHAVE\n");
+                    printf("<SINAL: {> | ");
                     break;
                 }
 
                 if (token.codigo == FECHA_CHAVE) {
-                    printf("FECHA_CHAVE\n");
+                    printf("<SINAL: }> | ");
                     break;
                 }
 
                 if (token.codigo == ABRE_COL) {
-                    printf("ABRE_COL\n");
+                    printf("<SINAL: [> | ");
                     break;
                 }
 
                 if (token.codigo == FECHA_COL) {
-                    printf("FECHA_COL\n");
+                    printf("<SINAL: ]> | ");
                     break;
                 }
                 break;
+
             case STRING:
-                printf("STRING: %s\n", token.lexema);
+                printf("<STRING: %s> | ", token.lexema);
                 break;
             case CT_I:
-                printf("CT_I: %d\n", token.valInt);
+                printf("<CT_I: %d> | ", token.valInt);
                 break;
             case CT_PF:
-                printf("CT_PF: %f\n", token.valPF);
+                printf("<CT_PF: %f> | ", token.valPF);
                 break;
             case CHAR:
-                printf("CHAR: %c\n", token.lexema[0]);
+                printf("<CHAR: %c> | ", token.lexema[0]);
                 break;
-            case COMENTARIO:
-                printf("COMENTARIO: %s\n", token.lexema);
+            case PR:
+                printf("<PR: %s> | ", token.lexema);
+                break;
+            case FIM_DE_LINHA:
+                printf("\nLINHA %d: ", token.valInt);
                 break;
             case FIM_EXPR:
-                printf("FIM_EXPR\n");
+                printf("FIM_EXPR");
                 break;
             case FIM_ARQ:
-                printf("FIM_ARQ\n");
+                printf("FIM_ARQ");
                 break;
             default:
-                printf("TOKEN: %s\n", token.lexema);
+                printf("\n%s", token.lexema);
                 break;
-                
-            }
-
+        }
+        
         if (token.categoria == FIM_ARQ) {
             break;
         }
-
     }
 
-        
     fclose(fd);
     return 0;
 }

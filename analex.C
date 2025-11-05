@@ -2,11 +2,24 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include <stdbool.h>
 #include "analex.h"
 
 #define TAM_LEXEMA 50
 #define TAM_NUM 20
+
+int contadorLinha = 1;
+
+const char *palavrasReservadas[] = {
+    "main", "if","elseif",
+    "endif", "else", "for", "while",
+    "endwhile", "const", "idconst",
+    "do", "switch", "case", "default",
+    "break", "continue", "printf", "scanf",
+    "int", "float", "char", "void",
+    "goback", "true", "false", "return",
+    "putint", "putreal", "putchar", "getint",
+    "getreal", "getchar", "bool", "with", "id", "block", "endblock"
+};
 
 void erro(const char *msg) {
     printf("Erro na linha %d: %s\n", contadorLinha, msg);
@@ -35,24 +48,28 @@ TOKEN Analex(FILE *fd) {
     char digitos[TAM_NUM];
     int tamD = 0;
 
-    TOKEN token = {};
+    TOKEN token = {0};
 
     estado = 0;
 
-    while (true) {
-        char c = fgetc(fd);
-
-        if (c == '\n') contadorLinha++;
+    
+    while (1) {
+        int c = fgetc(fd);
+        
+        if (c == EOF) {
+            token.categoria = FIM_ARQ;
+            return token;
+        }
+        
+        if (c == 10) {
+            contadorLinha++;
+            token.categoria = FIM_DE_LINHA;
+            token.valInt = contadorLinha;
+            return token;
+        }
 
         switch(estado) {
             case 0:  // ESTADO INICIAL
-
-
-                if (c == EOF) {
-                    token.categoria = FIM_ARQ;
-                    return token;
-                }
-
 
                 if (c == ' ' || c == '\t') {
                     estado = 0;
@@ -273,9 +290,8 @@ TOKEN Analex(FILE *fd) {
             case 10:
 
                 if (c == '\n' || c == EOF) {
-                    contadorLinha--;
                     lexema[tamL] = '\0';
-                    token.categoria = COMENTARIO;
+                    token.categoria = FIM_DE_LINHA;
                     strcpy(token.lexema, lexema);
                     return token;
                 }
@@ -306,6 +322,15 @@ TOKEN Analex(FILE *fd) {
                     break;
                 }
 
+                if (!isalpha(c) && !isdigit(c)) {
+                    ungetc(c, fd);
+                    estado = 0;
+                    lexema[tamL] = '\0';
+                    strcpy(token.lexema, lexema);
+                    token.categoria = ID;
+                    return token;
+                }
+
                 if (isalpha(c)) {
                     estado = 13;
                     lexema[tamL] = c;
@@ -314,21 +339,26 @@ TOKEN Analex(FILE *fd) {
                 }
 
             case 13:  // ESTADO DE LEITURA DE IDENTIFICADOR
-                if (c == '_' || isalpha(c) || isdigit(c)) {  
+                if (isalpha(c) || isdigit(c) || (!isalpha(c) && !isdigit(c) && c != ' ' && c != '`')) {
+                    
                     estado = 13;
                     lexema[tamL] = c;
                     lexema[++tamL] = '\0';
                     
-                } else {  // TRANSIÇÃO PARA OUTRO, RECONHECEU IDENTIFICADOR
+                } else {  // TRANSIÇÃO PARA OUTRO, RECONHECEU IDENTIFICADOR OU PALAVRA RESERVADA
                     if (c != '\n') ungetc(c, fd);
-                    estado = 0;
-                    lexema[tamL] = c;
-                    lexema[++tamL] = '\0';
-                    token.categoria = ID;
-                    strcpy(token.lexema, lexema);
 
+                    estado = 0;
+                    lexema[tamL] = '\0';
+                    strcpy(token.lexema, lexema);
+                    
                     int palavraReservada = verificarPalavraReservada(token.lexema);
-                    if (palavraReservada != 0) erro("Uso de palavra reservada como identificador!");
+                    
+                    if (palavraReservada == 0) {
+                        token.categoria = ID;
+                    } else {
+                        token.categoria = PR;
+                    }
 
                     return token;
                 }
@@ -500,20 +530,12 @@ TOKEN Analex(FILE *fd) {
                 }
 
             case 34:
-                if (c == '\n') {  // RECONHECEU COMENTARIO
-                    
-                    token.categoria = COMENTARIO;
-                    strcpy(token.lexema, lexema);
-                    return token;
+                while (c != '\n' && c != EOF) {
+                    c = fgetc(fd); 
                 }
 
-                if (isalpha(c) || isdigit(c) || (!isalpha(c) && !isdigit(c))) {
-                    estado = 34;
-                    lexema[tamL] = c;
-                    lexema[++tamL] = '\0';
-                    break;
-                }
-            
+                estado = 0;
+                break;
         }
     }
 }
