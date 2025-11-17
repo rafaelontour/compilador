@@ -477,8 +477,8 @@ TOKEN Analex(FILE *fd) {
 
                 ungetc(c, fd);
                 estado = 0;
-                lexema[tamL] = c;
-                lexema[++tamL] = '\0';
+                lexema[tamL] = '\0';
+                
                 token.categoria = SINAL;
                 token.codigo = ATRIB;
                 return token;
